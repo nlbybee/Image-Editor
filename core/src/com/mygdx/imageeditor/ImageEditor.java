@@ -5,46 +5,65 @@ import java.util.Random;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class ImageEditor extends ApplicationAdapter {
+	public static ImageEditor Instance;
 	SpriteBatch batch;
-	Rec2D rectangle;
-	private Vector2 _screenSize;
+	Button button1;
+	Button button2;
+	Button button3;
+	Button button4;
+	Button button5;
+	public Vector2 ScreenSize;
 	public Random random;
-	
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		_screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		rectangle = new Rec2D(new Vector2(200, 100), new Vector2(200,200), new Vector2(2, 5), Color.RED);
+
+	public ImageEditor() {
+		Instance = this;
 	}
 
 	@Override
-	public void render () {
+	public void create() {
+		batch = new SpriteBatch();
+		ScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		InputManager inputManager = new InputManager();
+		Gdx.input.setInputProcessor(inputManager);
+		Vector2 rectangleScale = new Vector2(100, 100);
+		button1 = new Button(rectangleScale,
+				new Vector2(ScreenSize.x / 5 - rectangleScale.x / 3, ScreenSize.y * 3/5),
+				Color.RED);
+		button2 = new Button(rectangleScale,
+				new Vector2(ScreenSize.x / 5 - rectangleScale.x / 3 , ScreenSize.y / 5),
+				Color.ORANGE);
+		button3 = new Button(rectangleScale,
+				new Vector2(ScreenSize.x * 3/5 + rectangleScale.x / 2, ScreenSize.y * 3/5),
+				Color.BLUE);
+		button4 = new Button(rectangleScale,
+				new Vector2(ScreenSize.x * 3/5 + rectangleScale.x / 2, ScreenSize.y / 5),
+				Color.GREEN);
+		button5 = new Button(rectangleScale,
+				new Vector2(ScreenSize.x / 2f - rectangleScale.x / 2f, ScreenSize.y / 2f - rectangleScale.y / 2f),
+				Color.WHITE);
+		CollisionManager collisionManager = new CollisionManager();
+	}
+
+	@Override
+	public void render() {
 		ScreenUtils.clear(0f, 0f, 0f, 1);
 		batch.begin();
-		batch.draw(rectangle.RecTexture, rectangle.Position.x, rectangle.Position.y);
-		if((rectangle.Position.x + rectangle.Scale.x) > _screenSize.x || rectangle.Position.x < 0) {
-			rectangle.Velocity.x *= -1;
-			Random random = new Random();
-			rectangle.changeColor(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
-			}
-		if((rectangle.Position.y + rectangle.Scale.y) > _screenSize.y || rectangle.Position.y < 0) {
-			rectangle.Velocity.y *= -1;
-			Random random = new Random();
-			rectangle.changeColor(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
-			}
-		rectangle.Position.add(rectangle.Velocity);
+		batch.draw(button1.RecTexture, button1.Position.x, button1.Position.y);
+		batch.draw(button2.RecTexture, button2.Position.x, button2.Position.y);
+		batch.draw(button3.RecTexture, button3.Position.x, button3.Position.y);
+		batch.draw(button4.RecTexture, button4.Position.x, button4.Position.y);
+		batch.draw(button5.RecTexture, button5.Position.x, button5.Position.y);
 		batch.end();
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch.dispose();
-		rectangle.RecTexture.dispose();
+		button1.RecTexture.dispose();
 	}
 }
