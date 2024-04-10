@@ -5,7 +5,10 @@ import com.badlogic.gdx.utils.Array;
 
 public class InputManager implements InputProcessor{
 	public static InputManager Instance;
-	public Array<Button> Buttons = new Array<Button>();
+	public Array<IClickable> Clickables = new Array<IClickable>();
+	public Array<IHoverable> Hoverables = new Array<IHoverable>();
+	private IHoverable _currentlyHovered;
+	private IClickable _currentlyClicked;
 	public InputManager() {
 		Instance = this;
 	}
@@ -13,15 +16,27 @@ public class InputManager implements InputProcessor{
 	public boolean keyUp(int keycode) {return false;}
 	public boolean keyTyped(char character) {return false;}
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		Button collision = CollisionManager.Instance.getCollision(
+		IClickable collision = CollisionManager.Instance.getClicked(
 				new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
-		if(collision != null) collision.onPressed();
-			return true;
+		if(collision != null) collision.onClickDown(new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
+		_currentlyClicked = collision;
+		return true;
 		}
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {return false;}
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		if(_currentlyClicked != null) _currentlyClicked.onClickUp(new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
+		return false;
+	}
 	public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return false;}
-	public boolean touchDragged(int screenX, int screenY, int pointer) {return false;}
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		mouseMoved(screenX, screenY);
+		if(_currentlyClicked != null) _currentlyClicked.onClickDragged(new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
+		return false;
+	}
 	public boolean mouseMoved(int screenX, int screenY) {
+		IHoverable collision = CollisionManager.Instance.getHovered(new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
+		if(_currentlyHovered != null && _currentlyHovered != collision) _currentlyHovered.onHoverExit();
+		if(collision != null) collision.onHovered();
+		_currentlyHovered = collision;
 		return true;
 	}
 	public boolean scrolled(float amountX, float amountY) {return false;}

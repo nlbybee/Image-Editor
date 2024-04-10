@@ -7,45 +7,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class ImageEditor extends ApplicationAdapter {
 	public static ImageEditor Instance;
 	SpriteBatch batch;
-	Button button1;
-	Button button2;
-	Button button3;
-	Button button4;
-	Button button5;
+	public Array<Rec2D> Rectangles = new Array<Rec2D>();
 	public Vector2 ScreenSize;
 	public Random random;
-
-	public ImageEditor() {
-		Instance = this;
-	}
-
-	@Override
+	private EditWindow _editWindow;
+	public Button button;
 	public void create() {
+		Instance = this;
 		batch = new SpriteBatch();
 		ScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		InputManager inputManager = new InputManager();
 		Gdx.input.setInputProcessor(inputManager);
-		Vector2 rectangleScale = new Vector2(100, 100);
-		button1 = new Button(rectangleScale,
-				new Vector2(ScreenSize.x / 5 - rectangleScale.x / 3, ScreenSize.y * 3/5),
-				Color.RED);
-		button2 = new Button(rectangleScale,
-				new Vector2(ScreenSize.x / 5 - rectangleScale.x / 3 , ScreenSize.y / 5),
-				Color.ORANGE);
-		button3 = new Button(rectangleScale,
-				new Vector2(ScreenSize.x * 3/5 + rectangleScale.x / 2, ScreenSize.y * 3/5),
-				Color.BLUE);
-		button4 = new Button(rectangleScale,
-				new Vector2(ScreenSize.x * 3/5 + rectangleScale.x / 2, ScreenSize.y / 5),
-				Color.GREEN);
-		button5 = new Button(rectangleScale,
-				new Vector2(ScreenSize.x / 2f - rectangleScale.x / 2f, ScreenSize.y / 2f - rectangleScale.y / 2f),
-				Color.WHITE);
+		Vector2 editWindowSize = new Vector2(500, ScreenSize.y - 50);
+		_editWindow = new EditWindow(editWindowSize, new Vector2(ScreenSize.x - editWindowSize.x, 0), Color.GRAY);
+		button = new Button(new Vector2(50, 50), new Vector2(0, 0), Color.YELLOW);
 		CollisionManager collisionManager = new CollisionManager();
 	}
 
@@ -53,17 +34,19 @@ public class ImageEditor extends ApplicationAdapter {
 	public void render() {
 		ScreenUtils.clear(0f, 0f, 0f, 1);
 		batch.begin();
-		batch.draw(button1.RecTexture, button1.Position.x, button1.Position.y);
-		batch.draw(button2.RecTexture, button2.Position.x, button2.Position.y);
-		batch.draw(button3.RecTexture, button3.Position.x, button3.Position.y);
-		batch.draw(button4.RecTexture, button4.Position.x, button4.Position.y);
-		batch.draw(button5.RecTexture, button5.Position.x, button5.Position.y);
+		Rec2D rec;
+		for(int i=0; i < Rectangles.size; i++) {
+			rec = Rectangles.get(i);
+			batch.draw(rec.RecTexture, rec.Position.x, rec.Position.y, rec.Scale.x, rec.Scale.y);
+		}
+		batch.draw(_editWindow.DoodleTexture, _editWindow.Position.x,
+				_editWindow.Position.y, _editWindow.Scale.x, _editWindow.Scale.y);
 		batch.end();
 	}
 
 	@Override
 	public void dispose() {
 		batch.dispose();
-		button1.RecTexture.dispose();
+		_editWindow.RecTexture.dispose();
 	}
 }
