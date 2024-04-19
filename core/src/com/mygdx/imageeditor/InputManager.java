@@ -1,4 +1,7 @@
 package com.mygdx.imageeditor;
+import java.io.IOException;
+
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -9,11 +12,21 @@ public class InputManager implements InputProcessor{
 	public Array<IHoverable> Hoverables = new Array<IHoverable>();
 	private IHoverable _currentlyHovered;
 	private IClickable _currentlyClicked;
+	private boolean _controlPressed;
 	public InputManager() {
 		Instance = this;
 	}
-	public boolean keyDown(int keycode) {return false;}
-	public boolean keyUp(int keycode) {return false;}
+	public boolean keyDown(int keycode) {
+		if(_controlPressed && keycode == Keys.S)
+			try {ImageInputOutput.Instance.saveImage("C:\\Users\\nlbyb\\OneDrive\\Desktop\\output.bmp");}
+			catch (IOException e) {e.printStackTrace();}
+		if(keycode == Keys.CONTROL_LEFT) _controlPressed = true;
+		return false;
+		}
+	public boolean keyUp(int keycode) {
+		if(keycode == Keys.CONTROL_LEFT) _controlPressed = false;
+		return false;
+	}
 	public boolean keyTyped(char character) {return false;}
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		IClickable collision = CollisionManager.Instance.getClicked(
