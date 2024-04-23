@@ -1,10 +1,11 @@
-package com.mygdx.imageeditor;
+package Utility;
 import java.io.IOException;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.imageeditor.ImageEditor;
 
 public class InputManager implements InputProcessor{
 	public static InputManager Instance;
@@ -17,12 +18,13 @@ public class InputManager implements InputProcessor{
 		Instance = this;
 	}
 	public boolean keyDown(int keycode) {
+		if(ImageInputOutput.Instance.ImageFolderLocation == null) return false;
 		if(_controlPressed && keycode == Keys.S)
-			try {ImageInputOutput.Instance.saveImage("C:\\Users\\nlbyb\\OneDrive\\Desktop\\output.bmp");}
+			try {ImageInputOutput.Instance.saveImage(ImageInputOutput.Instance.ImageFolderLocation + "\\output.bmp");}
 			catch (IOException e) {e.printStackTrace();}
 		if(keycode == Keys.CONTROL_LEFT) _controlPressed = true;
 		return false;
-		}
+	}
 	public boolean keyUp(int keycode) {
 		if(keycode == Keys.CONTROL_LEFT) _controlPressed = false;
 		return false;
@@ -49,6 +51,7 @@ public class InputManager implements InputProcessor{
 		IHoverable collision = CollisionManager.Instance.getHovered(new Vector2(screenX, ImageEditor.Instance.ScreenSize.y - screenY));
 		if(_currentlyHovered != null && _currentlyHovered != collision) _currentlyHovered.onHoverExit();
 		if(collision != null) collision.onHovered();
+		if(collision != _currentlyHovered) _currentlyClicked = null;
 		_currentlyHovered = collision;
 		return true;
 	}
